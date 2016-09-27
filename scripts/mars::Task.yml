@@ -1,0 +1,150 @@
+###############################################################################
+#                               INFO 
+#
+# Separate configuration for roboter and scene 
+#
+# Use 'initial_scene' property (string) to define roboter scene
+# Use 'initial_sceneS' property (vector of strings) to define environment sceneS
+#
+###############################################################################
+
+--- name:default
+# the full path to the main configuration folder
+#config_dir: "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/install/configuration/mars_default/"
+
+# some boolean settings
+enable_gui: 1
+distributed_simulation: 0
+realtime_calc: 1
+start_sim: 1
+gravity:
+  data: [0.0, 0.0, -9.81]
+show_coordinate_system: 0
+
+# step size in s
+# sim_step_size: 0.01  geht noch nicht
+
+# forward the original mars arguments, such as -c 1600 for setting the ode port - option consists of name, here: -c and parameter: here 1600
+raw_options: []
+
+# set the controller port, e.g. 1600 for communication with monster
+controller_port: 1600
+
+--- name:spaceclimber_in_empty_scene
+add_floor: 1
+initial_scenes: ["<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/robots/spaceclimber/smurf/spaceclimber.smurf",
+            	"<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/bundles/entern/empty_plane.scn"]
+    #"<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/bundles/entern/scenes/obstacle_course.svg"]
+    #"<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/bundles/entern/scenes/test.svg"]
+    #positions:                                                                      
+    #    - nodename: 'root'                                                              
+    #      posx: 1.0                                                                     
+    #      posy: 1.0                                                                     
+    #      posz: 1.0                                                                     
+    #      rotx: 0.0                                                                     
+    #      roty: 0.0                                                                     
+    #      rotz: 0.0  
+
+--- name:asguard_in_empty_scene
+add_floor: 1
+initial_scenes: ["<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/robots/asguard_v4/smurf/asguard_v4.smurf",
+				"<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/bundles/entern/scenes/empty_plane.scn"]				
+
+--- name:asguard_in_smurfs_scene
+add_floor: 1
+initial_scenes: ["<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/mantis_debris/mantis_debris.smurfs", 
+    "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/robots/asguard_v4/smurf/asguard_v4.smurf"]
+
+--- name:asguard_in_dlr_scene
+add_floor: 0
+initial_scenes: ["<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/spacebot_cup/mars_scene/dlr.scn", 
+    "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/robots/asguard_v4/smurf/asguard_v4.smurf"]
+
+#positions:                                                                      
+#    - nodename: 'link_Mesh.003_Kugel30'
+#      posx: 3.0                                                                     
+#      posy: 0.0                                                                     
+#      posz: 2.0                                                                     
+#      rotx: 0.0                                                                     
+#      roty: 0.0                                                                     
+#      rotz: 0.0  
+
+--- name:crex_in_dlr_scene
+initial_scenes: ["<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/spacebot_cup/mars_scene/dlr.scn", 
+    "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/robots/crex/smurf/crex.smurf"]
+
+
+--- name:emptyScene
+add_floor: 1
+initial_scenes: [ "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/bundles/entern/scenes/empty_plane.scn"]
+
+--- name:spaceclimber_astra15
+add_floor: 0
+initial_scenes: ["<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/robots/spaceclimber/smurf/spaceclimber.smurf",
+    "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/bundles/entern/scenes/astra.scn"]
+
+--- name:asguard_astra15
+add_floor: 0
+initial_scenes: ["<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/robots/asguard_v4/smurf/asguard_v4.smurf",
+    "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/bundles/entern/scenes/astra.scn"]
+
+--- name:asguard_crater
+add_floor: 0
+initial_scenes: ["<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/robots/asguard_v4/smurf/asguard_v4.smurf",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_0_02.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_0_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_0_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_0_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_0_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_0_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_0_3.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-1_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_1_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-1_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-1_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_1_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_1_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-1_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-1_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_1_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_1_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-1_3.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_1_3.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-2_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_2_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-2_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-2_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_2_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_2_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-2_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-2_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_2_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_2_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-2_3.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_2_3.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-3_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_3_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-3_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-3_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_3_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_3_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-3_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-3_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_3_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_3_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-3_3.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_3_3.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-4_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_4_0.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-4_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-4_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_4_-1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_4_1.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-4_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-4_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_4_-2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_4_2.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_-4_3.scn",
+     "<%= ENV['AUTOPROJ_CURRENT_ROOT'] %>/models/environments/rimres_crater/heightmaps/terrain_4_3.scn"
+    ]
+

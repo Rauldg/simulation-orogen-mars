@@ -452,4 +452,39 @@ task_context "AuvMotion" do
 
 end
 
+deployment 'just_mars' do
 
+    task( "mars", "mars::Task").
+        realtime.
+        priority(85)
+
+    add_default_logger.
+        realtime
+
+end
+
+deployment 'asguard_tests' do
+
+    task( "mars", "mars::Task").
+        realtime.
+        priority(85)
+    
+    task("mars_actuators", "mars::Joints").
+        realtime.
+        priority(71)
+    
+    # This one is for the passive joint
+    task('sysmon', 'mars::Joints'). 
+        realtime.
+        priority(71)
+    
+    task('xsens', 'mars::IMU').
+        realtime.
+        priority(25)
+    
+    task('velodyne', 'mars::RotatingLaserRangeFinder').
+         periodic(1.0)
+    
+    add_default_logger
+
+end

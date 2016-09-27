@@ -1,0 +1,87 @@
+--- name:default
+# optional configuration for the rigid_body_states
+# this module will generate on the
+joint_transform:
+  names: []
+  elements: []
+# no documentation available for this property
+# If this array is set the joints will be renamed for the external interface
+name_remap: []
+# Array of names of the motor in the scene file. The names get mapped to motor ids starting from zero
+names: []
+# Optional array of offset values that added to the scaled mars joint values. Needs to be empty or the same size as names.
+offset: []
+# maps a single joint command to two joints to control parallel kinematics simulated by two joints
+parallel_kinematics: []
+# Optional array of scale values that are applied to the mars joint values. Needs to be empty or the same size as names.
+scaling: []
+--- name:base
+names:
+    # These ones do not match with the ones in the motors.yml document
+    #- "joint_wheel_axis_fl_wheel_fl"
+    #- "joint_wheel_axis_rl_wheel_rl"
+    #- "joint_wheel_axis_rr_wheel_rr"
+    #- "joint_wheel_axis_fr_wheel_fr"
+    - "wheel_rear_right_motor"
+    - "wheel_rear_left_motor"
+    - "wheel_front_right_motor"
+    - "wheel_front_left_motor"
+#name_remap: 
+    #- "FRONT_LEFT"
+    #- "REAR_LEFT"
+    #- "REAR_RIGHT"
+    #- "FRONT_RIGHT"
+scaling: [1, 1, 1, 1]
+offset: [0, 0, 0, 0]
+
+--- name:sysmon
+names:
+    - "rear_bar_passive"
+    #- "joint_mainbody_bodyconnector"
+#name_remap: 
+    #- "BODY_JOINT"
+scaling: [1]
+offset: [0]
+
+--- name:dynamixel
+names:
+    #- "joint_head_tilt"
+    - "head"
+name_remap: 
+    - "tilt_front"
+scaling: [-1]
+offset: [0.0349]
+
+joint_transform:
+  names:
+    - tilt_front
+  elements:
+    - sourceFrame: lower_dynamixel
+      targetFrame: upper_dynamixel
+      rotationAxis: 
+        data: [0, 1, 0]
+
+--- name:crex_dynamixel
+# optional configuration for the rigid_body_states
+# this module will generate on the
+joint_transform:
+  names: [JointHead]
+  elements:
+    - sourceFrame: lower_dynamixel
+      targetFrame: upper_dynamixel
+      rotationAxis:
+        data: [0, 0, 1]
+
+# If this array is set the joints will be renamed for the external interface
+name_remap:
+- JointHead
+
+# Array of names of the motor in the scene file. The names get mapped to motor ids starting from zero
+names:
+- JointHead
+
+# Optional array of offset values that added to the scaled mars joint values. Needs to be empty or the same size as names.
+offset: [0]
+
+# Optional array of scale values that are applied to the mars joint values. Needs to be empty or the same size as names.
+scaling: [1]

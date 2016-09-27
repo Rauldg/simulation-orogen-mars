@@ -1,0 +1,8 @@
+--- name:default
+# Minimum valid range of the laser range finder
+name: "velodyne"
+min_range: 2.0
+max_range: 20.0
+# Name of the RotatingRaySensor in the scene file
+
+
