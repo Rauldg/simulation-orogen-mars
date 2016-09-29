@@ -1,0 +1,9 @@
+--- name:default
+# no documentation available for this property
+left_wheel_names: ["wheel_front_left_motor", "wheel_rear_left_motor"]
+# no documentation available for this property
+right_wheel_names: ["wheel_front_right_motor", "wheel_rear_right_motor"]
+# the distance between the two wheels of the same axis, in meters
+track_width: 0.515
+# the radius of a wheel, in meters
+wheel_radius: 0.178
