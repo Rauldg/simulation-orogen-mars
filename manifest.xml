@@ -16,6 +16,9 @@ The mars-core module provides the base for other modules that require the simula
   <depend package="simulation/mars/graphics" />
   <depend package="simulation/mars/sim" />
   <depend package="simulation/mars/scene_loader" />
+  <depend package="control/orogen/skid4_control" />
+  <depend package="control/orogen/joint_dispatcher" />
+  <depend package="control/orogen/trajectory_generation" />
   <versioncontrol type="git" url="" />
   <export>
     <cpp cflags="" lflags="" />
