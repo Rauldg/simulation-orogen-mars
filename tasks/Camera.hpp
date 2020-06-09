@@ -28,6 +28,7 @@ namespace mars {
         base::samples::frame::Frame *image;
         std::vector<mars::sim::Pixel> marsImage;
         RTT::extras::ReadOnlyPointer<base::samples::frame::Frame> ro_ptr;
+        bool isTIR;
 
     public:
         /** TaskContext constructor for Camera

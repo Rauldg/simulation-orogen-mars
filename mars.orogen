@@ -137,6 +137,8 @@ task_context "Camera" do
     subclasses "CameraPlugin"
     needs_configuration
 
+    property('isTIR', 'bool', false).
+    doc('The camera is a Thermal Infrared Camera')
     output_port 'frame', ro_ptr('base::samples::frame::Frame')
 end
 

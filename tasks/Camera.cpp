@@ -33,9 +33,9 @@ bool Camera::configureHook()
     if (! mars::CameraPlugin::configureHook())
         return false;
     
-
-    
-
+    // If nothing is set, then use default value: false
+    if (_isTIR.get())
+        isTIR = _isTIR.get();
     
     return true;
     
@@ -138,5 +138,11 @@ void Camera::getData()
     image->frame_status = base::samples::frame::STATUS_VALID;
     
     ro_ptr.reset(image);
+
+    if(isTIR)
+    {
+        LOG_DEBUG("I am a TIR Camera!");
+    }
+
     _frame.write(ro_ptr);
 }
