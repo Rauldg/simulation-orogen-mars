@@ -140,6 +140,7 @@ task_context "Camera" do
     property('isTIR', 'bool', false).
     doc('The camera is a Thermal Infrared Camera')
     output_port 'frame', ro_ptr('base::samples::frame::Frame')
+    output_port 'tir_image', ro_ptr('base::samples::DistanceImage')
 end
 
 task_context "DepthCamera" do

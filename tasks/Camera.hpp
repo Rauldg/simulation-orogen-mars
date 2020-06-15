@@ -4,6 +4,8 @@
 #define SIMULATION_MARSCAMERA_TASK_HPP
 
 #include "mars/CameraBase.hpp"
+#include <opencv2/core/core.hpp>
+#include <base/samples/DistanceImage.hpp>
 
 namespace mars {
 
@@ -28,6 +30,9 @@ namespace mars {
         base::samples::frame::Frame *image;
         std::vector<mars::sim::Pixel> marsImage;
         RTT::extras::ReadOnlyPointer<base::samples::frame::Frame> ro_ptr;
+
+        base::samples::DistanceImage *tirImage;
+        RTT::extras::ReadOnlyPointer<base::samples::DistanceImage> t_ro_ptr;
         bool isTIR;
 
     public:
@@ -105,6 +110,8 @@ namespace mars {
          * before calling start() again.
          */
         void cleanupHook();
+
+        double hsvTemperature(cv::Vec3b hsv_v) const;
 
         virtual void getData();
     };
