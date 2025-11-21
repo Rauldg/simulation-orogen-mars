@@ -44,6 +44,7 @@ namespace mars {
         
         // State flags
         bool has_environment;
+        bool has_precalculated;  // true if mls_precalculated has data, false if mls_sloped has data
         bool has_pose;
         bool is_simulating;
 
@@ -176,7 +177,7 @@ namespace mars {
          * Used to prepare for another simulation run with same data.
          * @return true if reset successful or already in correct state
          */
-        virtual bool reset();
+        virtual bool reset_simulation();
     };
 }
 

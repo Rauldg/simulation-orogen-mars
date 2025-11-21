@@ -693,7 +693,7 @@ task_context "InternalSimulatorTask", subclasses: "Plugin" do
         doc('Stop simulation and clear all stored environment and pose data from memory. Removes MLS from EnvireGraph, stops MARS simulation if running, resets to RUNNING state. Returns true immediately if simulation already stopped.').
         returns('bool')
     
-    operation('reset').
+    operation('reset_simulation').
         doc('Reset to READY_TO_SIMULATE state if both environment and pose data are available, without clearing data. Has no effect if data is incomplete (remains in current state). Used to prepare for another simulation run with same data.').
         returns('bool')
 

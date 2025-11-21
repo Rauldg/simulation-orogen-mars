@@ -2,14 +2,19 @@
 
 #include "InternalSimulatorTask.hpp"
 #include <envire_core/items/Item.hpp>
-#include <mars_interfaces/sim/ControlCenter.h>
-#include <mars_interfaces/sim/SimulatorInterface.h>
+#include <envire_core/graph/EnvireGraph.hpp>
+#include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/StorageManagerInterface.h>
+#include <boost/tuple/tuple.hpp>
 
 using namespace mars;
 
 InternalSimulatorTask::InternalSimulatorTask(std::string const& name)
     : InternalSimulatorTaskBase(name),
       has_environment(false),
+      has_precalculated(false),
       has_pose(false),
       is_simulating(false)
 {
@@ -18,6 +23,7 @@ InternalSimulatorTask::InternalSimulatorTask(std::string const& name)
 InternalSimulatorTask::InternalSimulatorTask(std::string const& name, RTT::ExecutionEngine* engine)
     : InternalSimulatorTaskBase(name, engine),
       has_environment(false),
+      has_precalculated(false),
       has_pose(false),
       is_simulating(false)
 {
@@ -45,6 +51,7 @@ bool InternalSimulatorTask::startHook()
     
     // Initialize state flags
     has_environment = false;
+    has_precalculated = false;
     has_pose = false;
     is_simulating = false;
     
@@ -58,22 +65,24 @@ void InternalSimulatorTask::updateHook()
     // Only read input ports if not currently simulating
     if (!is_simulating)
     {
-        // Read environment ports
+        // Read environment ports (precalculated takes priority)
         maps::grid::MLSMapPrecalculated temp_precalculated;
         if (_environment_precalculated.read(temp_precalculated) == RTT::NewData)
         {
             mls_precalculated = temp_precalculated;
             has_environment = true;
+            has_precalculated = true;
         }
 
         maps::grid::MLSMapSloped temp_sloped;
         if (_environment_sloped.read(temp_sloped) == RTT::NewData)
         {
             mls_sloped = temp_sloped;
-            // Only set has_environment from sloped if we don't already have precalculated
-            if (!has_environment)
+            // Only update has_environment from sloped if we don't already have precalculated
+            if (!has_precalculated)
             {
                 has_environment = true;
+                has_precalculated = false;  // Explicitly mark that we're using sloped
             }
         }
 
@@ -90,16 +99,15 @@ void InternalSimulatorTask::updateHook()
         {
             if (has_environment)
             {
-                // Always output precalculated format (convert sloped if needed)
-                if (!mls_precalculated.empty())
+                // Output the environment that will be used (prefer precalculated)
+                if (has_precalculated)
                 {
                     _debug_selected_environment.write(mls_precalculated);
                 }
-                else if (!mls_sloped.empty())
+                else
                 {
                     // Convert sloped to precalculated for debug output
-                    maps::grid::MLSMapPrecalculated debug_mls;
-                    debug_mls.copyFromMLSMapSloped(mls_sloped);
+                    maps::grid::MLSMapPrecalculated debug_mls = mls_sloped;
                     _debug_selected_environment.write(debug_mls);
                 }
             }
@@ -140,6 +148,7 @@ void InternalSimulatorTask::stopHook()
     // Clean up on stop
     cleanupMLSData();
     has_environment = false;
+    has_precalculated = false;
     has_pose = false;
 }
 
@@ -177,7 +186,7 @@ void InternalSimulatorTask::checkSimulationState()
     // Assert that our internal state matches reality
     if (control && control->sim)
     {
-        bool mars_running = control->sim->isSimulationRunning();
+        bool mars_running = control->sim->isSimRunning();
         if (mars_running != is_simulating)
         {
             LOG_ERROR_S << "Simulation state mismatch: is_simulating=" << is_simulating 
@@ -191,7 +200,7 @@ void InternalSimulatorTask::checkSimulationState()
 
 void InternalSimulatorTask::cleanupMLSData()
 {
-    if (!control || !control->envireGraph)
+    if (!control || !control->storage)
         return;
 
     try
@@ -199,13 +208,17 @@ void InternalSimulatorTask::cleanupMLSData()
         envire::core::FrameId frame_id = "mls_01";
         
         // Check if frame exists
-        if (control->envireGraph->containsFrame(frame_id))
+        if (control->storage->getGraph()->containsFrame(frame_id))
         {
             // Remove all items from the frame
-            auto items = control->envireGraph->getItems<envire::core::Item<maps::grid::MLSMapPrecalculated>>(frame_id);
-            for (auto& item : items)
+            using MLSPrecalculatedItem = envire::core::Item<maps::grid::MLSMapPrecalculated>;
+            using MLSPrecalculatedItr = envire::core::EnvireGraph::ItemIterator<MLSPrecalculatedItem>;
+            
+            MLSPrecalculatedItr itr, end_itr;
+            boost::tie(itr, end_itr) = control->storage->getGraph()->getItems<MLSPrecalculatedItem>(frame_id);
+            for (; itr != end_itr; itr++)
             {
-                control->envireGraph->removeItemFromFrame(frame_id, item);
+                control->storage->getGraph()->removeItemFromFrame(frame_id, itr);
             }
         }
     }
@@ -217,9 +230,9 @@ void InternalSimulatorTask::cleanupMLSData()
 
 bool InternalSimulatorTask::loadMLSToEnvire(bool precalculated)
 {
-    if (!control || !control->envireGraph)
+    if (!control || !control->storage)
     {
-        LOG_ERROR_S << "Control or EnvireGraph not available";
+        LOG_ERROR_S << "Control or storage not available";
         return false;
     }
 
@@ -227,10 +240,11 @@ bool InternalSimulatorTask::loadMLSToEnvire(bool precalculated)
     {
         envire::core::FrameId frame_id = "mls_01";
         
-        // Ensure frame exists
-        if (!control->envireGraph->containsFrame(frame_id))
+        // Ensure frame exists (should be created by mars::Task)
+        if (!control->storage->getGraph()->containsFrame(frame_id))
         {
-            control->envireGraph->addFrame(frame_id);
+            LOG_ERROR_S << "Frame " << frame_id << " does not exist in graph";
+            return false;
         }
 
         // Create and add the MLS item
@@ -238,18 +252,17 @@ bool InternalSimulatorTask::loadMLSToEnvire(bool precalculated)
         {
             envire::core::Item<maps::grid::MLSMapPrecalculated>::Ptr item(
                 new envire::core::Item<maps::grid::MLSMapPrecalculated>(mls_precalculated));
-            control->envireGraph->addItemToFrame(frame_id, item);
+            control->storage->getGraph()->addItemToFrame(frame_id, item);
             LOG_INFO_S << "Loaded PRECALCULATED MLS to frame " << frame_id;
         }
         else
         {
-            // Convert sloped to precalculated before loading
-            maps::grid::MLSMapPrecalculated converted_mls;
-            converted_mls.copyFromMLSMapSloped(mls_sloped);
+            // Convert sloped to precalculated before loading (simple assignment does conversion)
+            maps::grid::MLSMapPrecalculated converted_mls = mls_sloped;
             
             envire::core::Item<maps::grid::MLSMapPrecalculated>::Ptr item(
                 new envire::core::Item<maps::grid::MLSMapPrecalculated>(converted_mls));
-            control->envireGraph->addItemToFrame(frame_id, item);
+            control->storage->getGraph()->addItemToFrame(frame_id, item);
             LOG_INFO_S << "Converted SLOPE MLS to PRECALCULATED and loaded to frame " << frame_id;
         }
 
@@ -343,8 +356,7 @@ bool InternalSimulatorTask::run()
     cleanupMLSData();
 
     // Step 3: Load MLS environment (prefer precalculated)
-    bool use_precalculated = !mls_precalculated.empty();
-    if (!loadMLSToEnvire(use_precalculated))
+    if (!loadMLSToEnvire(has_precalculated))
     {
         LOG_ERROR_S << "Failed to load MLS environment";
         return false;
@@ -394,6 +406,7 @@ bool InternalSimulatorTask::finish()
     mls_sloped = maps::grid::MLSMapSloped();
     start_pose = base::samples::RigidBodyState();
     has_environment = false;
+    has_precalculated = false;
     has_pose = false;
 
     // Reset to RUNNING state
@@ -403,7 +416,7 @@ bool InternalSimulatorTask::finish()
     return true;
 }
 
-bool InternalSimulatorTask::reset()
+bool InternalSimulatorTask::reset_simulation()
 {
     LOG_INFO_S << "Resetting simulation state...";
 
