@@ -654,3 +654,51 @@ task_context "CorobxTask", subclasses: "Plugin" do
 
     port_driven
 end
+
+# Consolidated internal simulation task that combines functionality from
+# mars::CorobxTask and mars::MLS for setting up and running internal simulations.
+# This task manages environment (MLS) loading, robot pose setting, and simulation
+# lifecycle control through operations rather than port-driven state observation.
+# Designed to work with future behavior tree coordination.
+task_context "InternalSimulatorTask", subclasses: "Plugin" do
+    needs_configuration
+
+    # Property to enable/disable debug output ports
+    property('debug_ports_enabled', 'bool', true).
+        doc('Enable debug output ports for inspecting simulation setup data')
+
+    # Input ports for simulation setup
+    input_port('environment_precalculated', '/maps/grid/MLSMap</maps/grid/MLSConfig/PRECALCULATED>').
+        doc('Precalculated MLS environment map for simulation terrain')
+    
+    input_port('environment_sloped', '/maps/grid/MLSMap</maps/grid/MLSConfig/SLOPE>').
+        doc('Slope-based MLS environment map (will be converted to precalculated format). PRECALCULATED input takes precedence if both are provided.')
+    
+    input_port('start_pose', '/base/samples/RigidBodyState').
+        doc('Initial robot pose for simulation. The targetFrame field specifies which MARS node to position.')
+
+    # Debug output ports showing data that will be used in next simulation run
+    output_port('debug_selected_environment', '/maps/grid/MLSMap</maps/grid/MLSConfig/PRECALCULATED>').
+        doc('Debug output showing the environment data that will be used in the next simulation run when run() is called. Only outputs when debug_ports_enabled is true and not in SIMULATING state.')
+    
+    output_port('debug_selected_pose', '/base/samples/RigidBodyState').
+        doc('Debug output showing the start pose that will be used in the next simulation run when run() is called. Only outputs when debug_ports_enabled is true and not in SIMULATING state.')
+
+    # Operations for simulation control
+    operation('run').
+        doc('Start simulation with currently loaded environment and pose. Returns false if not in READY_TO_SIMULATE state or if simulation is already running. Sequences: pose setting -> MLS loading to EnvireGraph -> start MARS simulation.').
+        returns('bool')
+    
+    operation('finish').
+        doc('Stop simulation and clear all stored environment and pose data from memory. Removes MLS from EnvireGraph, stops MARS simulation if running, resets to RUNNING state. Returns true immediately if simulation already stopped.').
+        returns('bool')
+    
+    operation('reset').
+        doc('Reset to READY_TO_SIMULATE state if both environment and pose data are available, without clearing data. Has no effect if data is incomplete (remains in current state). Used to prepare for another simulation run with same data.').
+        returns('bool')
+
+    # Runtime states indicating simulation setup progress
+    runtime_states 'POSE_RECEIVED', 'ENVIRONMENT_RECEIVED', 'READY_TO_SIMULATE', 'SIMULATING'
+
+    port_driven
+end
