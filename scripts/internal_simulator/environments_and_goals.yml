@@ -1,0 +1,36 @@
+# Environment definitions for Internal Simulation
+# 
+# Each environment entry should contain:
+#   - name: Display name for the environment
+#   - path: Absolute or relative path to the environment model file (PLY/PCD)
+#   - description: Short description of the environment
+#   - poses: Dictionary of named poses within the environment
+#            Each pose is defined as [x, y, z, yaw] where:
+#            - x, y, z: Position in meters
+#            - yaw: Rotation around z-axis in radians
+#
+# Example structure:
+# environments:
+#   - name: "Flat Terrain"
+#     path: "/opt/workspace/models/environments/flat_10x10.ply"
+#     description: "Flat 10x10 meter terrain for basic testing"
+#     poses:
+#       center: [0.0, 0.0, 0.0, 0.0]
+#       north_corner: [5.0, 5.0, 0.0, 0.0]
+#       south_corner: [-5.0, -5.0, 0.0, 1.57]
+#
+#   - name: "Rocky Terrain"
+#     path: "/opt/workspace/models/environments/rocky_terrain.ply"
+#     description: "Uneven rocky terrain with obstacles"
+#     poses:
+#       start_point: [0.0, 0.0, 0.5, 0.0]
+#       waypoint_1: [10.0, 5.0, 0.8, 1.57]
+#       goal_point: [20.0, 10.0, 1.0, 3.14]
+
+environments:
+  - name: "Cueva del Viento"
+    path: "models/environments/entern_pointclouds/pointcloud.ply"
+    description: "Cave of 230 meters mapped by Asguard v4 in Entern"
+    poses:
+      entrance_01: [0.0, 0.0, 0.0, 0.0]
+      entrance_02: [5.0, 5.0, 0.0, 0.0]
